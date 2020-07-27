@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: sbt
+  main:
+    banner-mode: off
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181
+  loadbalancer:
+    ribbon:
+      enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: myGroup
+      auto-offset-reset: earliest
+server:
+  port: 8081
+tablenode:
+  ipc:
+    transfer:
+      port: 41414
+  fs:
+    root: mdfs-zk://mdfs/mdfs
+cluster:
+  datanodes:
+    - localhost:51515
+  

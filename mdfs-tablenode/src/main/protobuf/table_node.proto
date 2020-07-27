@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package mdfs.tablenode;
+
+option java_package = "io.github.belugabehr.mdfs.tablenode";
+
+import "google/protobuf/any.proto";
+
+message WalEntry {
+  google.protobuf.Any file_operation_request = 1;
+}

@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package mdfs.api;
+
+option java_package = "io.github.belugabehr.mdfs.api";
+
+import "google/protobuf/timestamp.proto";
+
+/* Make a separate MFile Id field so the entire file information isn't sent */
+message MFile {
+  message MFileId {
+    string namespace = 1;
+    bytes id = 2;
+  }
+  MFileId file_id = 1;
+  google.protobuf.Timestamp creation_time = 2;
+  google.protobuf.Timestamp finalize_time = 3;
+  google.protobuf.Timestamp deletion_time = 4;
+  int64 file_size = 5;
+  int64 block_size = 6;
+  Replication replication = 7;
+  repeated string security_label = 8;
+  repeated MBlock block = 9;
+}
+
+message MBlock {
+  MBlockDetails block_details = 1;
+  repeated string location = 2;
+}
+
+message MBlockDetails {
+    bytes block_id = 1;
+    google.protobuf.Timestamp creation_date = 2;
+    int64 block_size = 3;
+    enum HashAlgo {
+      MD5 = 0;
+      SHA1 = 1;
+      SHA256 = 2;
+    }
+    HashAlgo hash_algo = 4;
+    bytes hash_value = 5;
+    int32 chunk_size = 6;
+}
+
+message MBlockChunk {
+  int64 checksum = 1;
+  bytes data = 2;
+}
+
+message Replication {
+  message Fan {
+    int32 replicas = 1;
+    int32 minReplicas = 2;
+  }
+  message Pipeline {
+    int32 replicas = 1;
+    int32 minReplicas = 2;
+    repeated string uri = 3;
+  }
+  message RsErasureEncoded {
+    int32 data_blocks = 1;
+    int32 parity_blocks = 2;
+    int32 striping_cell_size = 3;
+  }
+  oneof type {
+    Fan fan = 1;
+    Pipeline pipeline = 2;
+    RsErasureEncoded rs_erasure_encoding = 3;
+  }
+}

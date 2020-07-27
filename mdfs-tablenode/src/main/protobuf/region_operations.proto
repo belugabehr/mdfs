@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package mdfs.tablenode;
+
+option java_package = "io.github.belugabehr.mdfs.tablenode";
+
+message RegionScanRequest {
+   bytes id = 1;
+   oneof request_type {
+     HeadScanRequest headScan = 2;
+     TailScanRequest tailScan = 3;
+     RangeScanRequest rangeScan = 4;
+   }
+   int32 max_version = 5;
+   repeated RegionRowProjection projection = 6;
+}
+
+message HeadScanRequest {
+   bytes stop_key = 1;   
+}
+
+message TailScanRequest {
+   bytes start_key = 1;
+}
+
+message RangeScanRequest {
+   bytes start_key = 1;
+   bytes stop_key = 2;
+}
+
+message RegionRowProjection  { 
+   string column_family = 1;
+   oneof column {
+     string column_name = 2;
+   }
+}
+

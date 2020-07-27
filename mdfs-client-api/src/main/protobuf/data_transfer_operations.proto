@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package mdfs.api;
+
+option java_package = "io.github.belugabehr.mdfs.api";
+
+import "mdfs.proto";
+
+message DataTransferRequest {
+   bytes id = 1;
+   oneof request {
+     ReadBlockRequest  readBlockRequest = 2;
+     WriteBlockRequest writeBlockRequest = 3;
+     WriteBlockChunksRequest writeBlockChunksRequest = 4;
+     DeleteBlockRequest deleteBlockRequest = 5;
+     ReplicateBlockRequest replicateBlockRequest = 6;
+   }
+}
+
+message DataTransferResponse {
+   bytes id = 1;
+   oneof response {
+     ReadBlockResponse readBlockResponse = 2;
+   }
+}
+
+message DeleteBlockRequest {
+   bytes block_id = 1;
+}
+
+message ReadBlockRequest {
+   bytes block_id = 1;
+   int32 chunk_start = 2;
+   int32 chunk_stop = 3;
+}
+
+message ReadBlockResponse {
+   repeated MBlockChunk blockChunk = 1;
+}
+
+message WriteBlockRequest {
+   MBlock block = 1;
+   Replication replication = 2;
+}
+
+message ReplicateBlockRequest {
+   bytes id = 1;
+   repeated string uri = 2;
+}
+
+message WriteBlockChunksRequest {
+   repeated MBlockChunk chunk = 1;
+}

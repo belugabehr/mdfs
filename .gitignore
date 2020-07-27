@@ -1,0 +1,15 @@
+
+# Maven target directories
+/target/
+*/target/**
+
+# Eclipse Core
+*/.project
+.project
+
+# JDT-specific (Eclipse Java Development Tools)     
+*/.classpath
+
+# Eclipse Settings
+*/.settings/**
+.settings/**

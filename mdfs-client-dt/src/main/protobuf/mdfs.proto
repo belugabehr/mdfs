@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package mdfs.api;
+
+option java_package = "io.github.belugabehr.mdfs.api";
+
+import "google/protobuf/timestamp.proto";
+
+/* Make a separate MFile Id field so the entire file information isn't sent */
+message MFile {
+  message MFileId {
+    string namespace = 1;
+    bytes id = 2;
+  }
+  MFileId file_id = 1;
+  google.protobuf.Timestamp creation_time = 2;
+  google.protobuf.Timestamp finalize_time = 3;
+  google.protobuf.Timestamp deletion_time = 4;
+  int64 file_size = 5;
+  int64 block_size = 6;
+  int32 replication_factor = 7;
+  repeated string security_label = 8;
+  repeated MBlock block = 9;
+}
+
+message MBlock {
+  MBlockDetails block_details = 1;
+  repeated string location = 2;
+}
+
+message MBlockDetails {
+    bytes block_id = 1;
+    google.protobuf.Timestamp creation_date = 2;
+    int64 block_size = 3;
+    enum HashAlgo {
+      MD5 = 0;
+      SHA1 = 1;
+      SHA256 = 2;
+    }
+    HashAlgo hash_algo = 4;
+    bytes hash_value = 5;
+    int32 chunk_size = 6;
+}
+
+message MBlockChunk {
+  int64 checksum = 1;
+  bytes data = 2;
+}

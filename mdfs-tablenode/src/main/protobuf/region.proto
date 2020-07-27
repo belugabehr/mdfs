@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package mdfs.region;
+
+option java_package = "io.github.belugabehr.mdfs.region";
+
+import "google/protobuf/any.proto";
+
+message RegionRow {
+  message RowId {
+    bytes row_key = 1;
+    string column_family = 2;
+    string column_qualifier = 3;
+    int64 version = 4;
+  }
+  RowId row_id = 1;
+  google.protobuf.Any cell = 2;
+}

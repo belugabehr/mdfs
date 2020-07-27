@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package mdfs.api;
+
+option java_package = "io.github.belugabehr.mdfs.api";
+
+import "mdfs.proto";
+import "google/protobuf/timestamp.proto";
+
+message FileOperationRequest {
+   bytes id = 1;
+   oneof request {
+     CreateFileRequest createFileRequest = 2;
+     FinalizeFileRequest finalizeFileRequest = 3;
+     DeleteFileRequest deleteFileRequest = 4;
+     ListFileRequest listFileRequest = 5;
+   }
+}
+
+message FileOperationResponse {
+   bytes id = 1;
+   oneof request {
+     FileOperationErrorResponse errorResponse = 2;
+     CreateFileResponse createFileResponse = 3;
+     FinalizeFileResponse finalizeFileResponse = 4;
+     DeleteFileResponse deleteFileResponse = 5;
+     ListFileResponse listFileResponse = 6;
+   }
+}
+
+message CreateFileRequest {
+   MFile file = 1;
+}
+
+message CreateFileResponse {
+  MFile file = 1;
+  repeated string location = 2;
+}
+
+message FinalizeFileRequest {
+  MFile file = 1;
+}
+
+message FinalizeFileResponse {
+  MFile file = 1;
+}
+
+message DeleteFileRequest {
+  MFile.MFileId file_id = 1;
+  google.protobuf.Timestamp creation_time = 2;
+}
+
+message DeleteFileResponse {
+  bool ok = 1;
+}
+
+message FileOperationErrorResponse {
+  string error_message = 1;
+    oneof request {
+      CreateFileRequest createFileRequest = 2;
+    }
+}
+
+
+message ListFileRequest {
+  message ListByNamespace {
+    string namespace = 1;
+  }
+  message ListByFileId {
+	repeated MFile.MFileId file_id = 1;
+  }
+  bool long_listing = 1;
+  oneof list_type {
+    ListByNamespace list_by_namespace = 2;
+    ListByFileId list_by_file_id = 3;
+  }
+}
+
+message ListFileResponse {
+	repeated MFile file = 1;
+}
