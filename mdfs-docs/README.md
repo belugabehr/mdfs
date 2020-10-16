@@ -60,7 +60,7 @@ One of the clever things implemented with HDFS is block locality. That is, the c
 data to the data nodes based on their location as well. With MDFS it is up to the client to determine block placement.
 
 
-### Archetecture
+### Architecture
 
 ![Single Root Pod](images/MDFS_Root.png)
 
