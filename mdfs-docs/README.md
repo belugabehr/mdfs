@@ -59,6 +59,21 @@ directly to data nodes to direct them to take some sort of action (replicate blo
 One of the clever things implemented with HDFS is block locality. That is, the central NameNode detects where the client is located and directs them to transfer
 data to the data nodes based on their location as well. With MDFS it is up to the client to determine block placement.
 
+### Data Consistency
+
+With the current implementation of MDFS, both reads and write requests are written to the WAL. In this way, consistency is guaranteed when one client writes to one
+table node and another client reads from another. The client read request will be a point-in-time consistent view of the entire data set. However, if there a table
+node is experiencing signicant Kafka consumer lag, relative to its peers, reads addressed to this node will block for extended periods of time until the read request
+is read from the WAL and processed.
+
+Since a file reads and writes happen in sequence, it is beneficial to keep the data sets maintained by each MDFS Pods small so that load can be better distributed.
+
+### Recovery Time
+
+Since an MDFS Pod has three or more instances of Kafka Brokers, MDFS Table Nodes, and ZooKeeper servers, there is minimal downtime in the event of a system failure.
+External clients can simply failover to still-active table node pod members, table nodes can reply on the fault-tolerance inherent in ZooKeeper and Kafka.
+
+Regenerated/repaired Pod members can easily re-join the pod.
 
 ### Architecture
 
@@ -107,3 +122,20 @@ data to the data nodes based on their location as well. With MDFS it is up to th
 		}
 	}
 ```
+
+## Moving Forwards
+
+### Combining HBase and HDFS
+
+MDFS can be viewed as another BigTable implementation with a data-storage add-on.  As such, a single MDFS cluster could take the role of two and greatly simplify deployments.
+
+HBase relies on HDFS for its WAL implementation. HDFS is a heavy-weight dependency that does not tolerate cloud deployments well. MDFS simplifies the overall architecture by using
+the cloud-tested Kafka log system as its WAL provider.  Having Kafka in the stack can also be leveraged to store audit log, and health-and-status log data.
+
+### Cloud Deployments
+
+MDFS lends itself well to cloud deployments. For example, in an environment with three Kafka Brokers and three data centers, data written to the WAL are automatically replicated
+across several environments. By also distributing the table nodes, a every data center could have its own local instance of a table node to query.
+
+One of the challenges however is that both Kafka and ZooKeeper have a single instance that serves as the primary gateway for write paths. This means added latency when writing to
+environments that do not host the leader. Perhaps, in the future, a radis-based or paxos-based system could store WAL and File Metadata without a single node for write paths.
